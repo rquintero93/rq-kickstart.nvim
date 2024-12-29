@@ -144,6 +144,8 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
+  -- 'nvim-lua/plenary.nvim',
+  -- 'tjdevries/express_line.nvim',
   'karb94/neoscroll.nvim',
   { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
@@ -238,7 +240,11 @@ require('lazy').setup({
       --  - yinq - [Y]ank [I]nside [N]ext [Q]uote
       --  - ci'  - [C]hange [I]nside [']quote
       require('mini.ai').setup { n_lines = 500 }
-
+      require('mini.icons').setup()
+      require('mini.git').setup()
+      require('mini.diff').setup()
+      -- require('mini.operators').setup()
+      require('mini.pairs').setup()
       -- Add/delete/replace surroundings (brackets, quotes, etc.)
       --
       -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
@@ -249,22 +255,39 @@ require('lazy').setup({
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
       --  and try some other statusline plugin
-      local statusline = require 'mini.statusline'
+      -- local statusline = require 'mini.statusline'
       -- set use_icons to true if you have a Nerd Font
-      statusline.setup { use_icons = vim.g.have_nerd_font }
+      require('mini.statusline').setup({ use_icons = true })
+      config2=function()
+      local mode, mode_hl = MiniStatusline.section_mode({ trunc_width = 120 })
+      local git           = MiniStatusline.section_git({ trunc_width = 40 })
+      local diff          = MiniStatusline.section_diff({ trunc_width = 75 })
+      -- local diagnostics   = MiniStatusline.section_diagnostics({ trunc_width = 75 })
+      -- local lsp           = MiniStatusline.section_lsp({ trunc_width = 75 })
+      -- local filename      = MiniStatusline.section_filename({ trunc_width = 140 })
+      -- local fileinfo      = MiniStatusline.section_fileinfo({ trunc_width = 120 })
+      -- local location      = MiniStatusline.section_location({ trunc_width = 75 })
+      -- local search        = MiniStatusline.section_searchcount({ trunc_width = 75 })
 
+    return MiniStatusline.combine_groups({
+      { hl = mode_hl,                  strings = { mode } },
+      { hl = 'MiniStatuslineDevinfo',  strings = { git, diff } },
+      '%<', -- Mark general truncate point
+    })
+      end
       -- You can configure sections in the statusline by overriding their
       -- default behavior. For example, here we set the section for
       -- cursor location to LINE:COLUMN
-      ---@diagnostic disable-next-line: duplicate-set-field
-      statusline.section_location = function()
-        return '%2l:%-2v'
-      end
+      -- @diagnostic disable-next-line: duplicate-set-field
+      -- statusline.section_location = function()
+        -- return '%2l:%-2v'
+      -- end
 
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
   },
+
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
     -- default lazy.nvim defined Nerd Font icons, otherwise define a unicode icons table
